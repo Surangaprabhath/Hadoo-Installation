@@ -1,18 +1,37 @@
 #!/bin/bash
 # Full installation Guide for cloud instance
 
+# Java installation
 yum install java-devel
+
+#openssh Client and Server installation
 yum install openssh-server openssh-clients -y
+
+#verify Java Installation
 java -version; javac -version
 
+
+#create hadoop non root user
 sudo adduser hdoop
+
+#login to hadoop user
 su - hdoop
+
+#create key and permission grant
 ssh-keygen -t rsa -P '' -f ~/.ssh/id_rsa
 cat ~/.ssh/id_rsa.pub >> ~/.ssh/authorized_keys
 chmod 0600 ~/.ssh/authorized_keys
+
+#login to localhost
 ssh localhost
+
+#download Hadoop
 wget https://downloads.apache.org/hadoop/common/hadoop-3.2.2/hadoop-3.2.2.tar.gz
+
+#Extract hadoop file
 tar -zxvf hadoop-3.2.2.tar.gz
+
+#Set Hadoop paths
 vim .bashrc
 
 #Hadoop Related Options
@@ -28,6 +47,7 @@ export HADOOP_OPTS="$HADOOP_OPTS -Djava.library.path=$HADOOP_HOME/lib/native"
 
 source .bashrc
 
+#Set JAva Path and Configurations
 cd hadoop-3.2.2/etc/hadoop
 
 vim hadoop-env.sh
@@ -36,6 +56,7 @@ vim hadoop-env.sh
 which javac
 readlink -f /usr/bin/javac
 
+#Configure Core-Site-Xml
 vim core-site.xml
 
 <configuration>
@@ -49,6 +70,8 @@ vim core-site.xml
 </property>
 </configuration>
 
+
+#Configure hdfs-site-xml 
 vim hdfs-site.xml
 
 <configuration>
@@ -66,6 +89,8 @@ vim hdfs-site.xml
 </property>
 </configuration>
 
+
+#Configure mapred-site.xml
 vim mapred-site.xml
 
 <configuration>
@@ -75,6 +100,8 @@ vim mapred-site.xml
 </property>
 </configuration>
 
+
+#Configure yarn-site.xml
 vim yarn-site.xml
 
 <configuration>
@@ -106,6 +133,7 @@ hdfs namenode -format
 cd ../..
 cd sbin
 
+#Start Hadoop
 ./start-dfs.sh
 ./start-yarn.sh
 jps
